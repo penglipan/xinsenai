@@ -8,6 +8,8 @@ import okhttp3.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import java.util.concurrent.TimeUnit;
+import java.net.Proxy;
+import java.net.InetSocketAddress;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -25,8 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint(value = "/websocket/{nickname}")
 public class WebSocketController {
     private Session session;
-    private static final String GPT_ENDPOINT = "https://api.openai.com/v2/engines/davinci/completions";
-    private static final String GPT_API_KEY = "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";  // Replace with your actual secret key
+    private static final String GPT_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+    private static final String GPT_API_KEY = "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";  // Replace with your actual secret key
 
     public static List<Friends> friendsList = new ArrayList<>();
     public static ConcurrentHashMap<String, WebSocketController> webSocketSession = new ConcurrentHashMap<>();
@@ -104,6 +106,9 @@ public class WebSocketController {
     private static final int RETRY_DELAY_SECONDS = 5;
 
     private String getGptResponse(String prompt) {
+
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890));
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)  // 30 seconds connection timeout
                 .readTimeout(30, TimeUnit.SECONDS)     // 30 seconds read timeout
@@ -111,13 +116,19 @@ public class WebSocketController {
 
         MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
         com.alibaba.fastjson.JSONObject jsonBody = new com.alibaba.fastjson.JSONObject();
-        jsonBody.put("prompt", prompt);
-        jsonBody.put("max_tokens", 150);
+
+        // 更新此部分以匹配新的请求格式
+        com.alibaba.fastjson.JSONArray messagesArray = new com.alibaba.fastjson.JSONArray();
+        messagesArray.add(new com.alibaba.fastjson.JSONObject().fluentPut("role", "user").fluentPut("content", prompt));
+        jsonBody.put("messages", messagesArray);
+        jsonBody.put("model", "gpt-3.5-turbo");
+        jsonBody.put("temperature", 0.7);
+
         RequestBody body = RequestBody.create(JSON_TYPE, jsonBody.toJSONString());
 
         Request request = new Request.Builder()
                 .url(GPT_ENDPOINT)
-                .header("Authorization", "Bearer " + "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")
+                .header("Authorization", "Bearer " + GPT_API_KEY)
                 .header("Content-Type", "application/json")
                 .post(body)
                 .build();
