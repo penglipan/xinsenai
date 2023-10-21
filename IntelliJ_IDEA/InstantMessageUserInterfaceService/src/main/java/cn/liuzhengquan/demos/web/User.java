@@ -22,8 +22,8 @@ package cn.liuzhengquan.demos.web;
 public class User {
 
     private String name;
-
     private Integer age;
+    private boolean isAI;
 
     public String getName() {
         return name;
@@ -39,5 +39,13 @@ public class User {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public boolean getIsAI() {
+        return isAI;
+    }
+
+    public void setIsAI(boolean isAI) {
+        this.isAI = isAI;
     }
 }

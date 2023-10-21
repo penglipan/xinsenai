@@ -46,10 +46,19 @@ public class BasicController {
     }
 
     // http://127.0.0.1:8080/save_user?name=newName&age=11
-    @RequestMapping("/save_user")
     @ResponseBody
-    public String saveUser(User u) {
-        return "user will save: name=" + u.getName() + ", age=" + u.getAge();
+    @RequestMapping("/save_user")
+    public String saveUser(User user) {
+        // 保存 user 信息的代码...
+
+        if (!user.getIsAI()) {
+            User aiClone = new User();
+            aiClone.setName(user.getName() + "1");
+            aiClone.setIsAI(true);
+            // 保存 aiClone 信息的代码...
+        }
+
+        return "User saved successfully!";
     }
 
     // http://127.0.0.1:8080/html

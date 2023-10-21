@@ -13,11 +13,34 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.7.6</spring-boot.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>aliyun-repo</id>
+            <name>Aliyun Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyun-repo</id>
+            <name>Aliyun Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
         <!--WebSocket-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.1</version>
         </dependency>
 
         <!--fastJson 阿里巴巴-->
@@ -44,6 +67,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -87,5 +111,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
