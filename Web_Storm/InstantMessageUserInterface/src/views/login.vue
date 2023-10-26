@@ -6,10 +6,7 @@
       <!--布局-->
       <el-row class="layout">
         <el-col class="col" :span="15">
-          <!-- 产品效果图 -->
-          <div class="product-show">
-            <img src="@/assets/image/theme/login/Product-Demo-Photo.png" alt="">
-          </div>
+          <div class="dynamic-text" ref="dynamicText"></div>
         </el-col>
         <el-col :span="9">
           <!--表单容器-->
@@ -22,7 +19,7 @@
               </div>
               <!--标题-->
               <div class="title">
-                即时通讯
+                新生AI
               </div>
             </div>
             <!--表单-->
@@ -35,7 +32,7 @@
               <div class="nickname">
                 <el-input
                     v-model="nickname"
-                    placeholder="请输入账号/昵称..."
+                    placeholder="请输入手机号"
                     :prefix-icon="Avatar"
                     @keyup.enter="submitCreate"
                 />
@@ -59,7 +56,7 @@
               </div>
               <!--脚页-->
               <div class="footer">
-                <div>© 2023 LiuZhengQuan.cn</div>
+                <div>© 2023 星系引力科技有限公司</div>
                 <div>Cookie与隐私</div>
                 <div>使用条款</div>
               </div>
@@ -84,6 +81,67 @@ const router = useRouter()
 const userStore = useUser()
 import {ElNotification} from 'element-plus'
 
+import { onMounted, onBeforeUnmount } from 'vue';
+
+const dynamicText = ref<HTMLDivElement | null>(null);
+const textContents = ['新生代社交AI', '自由的下一个维度']; // 使用数组来存储两句话
+let currentTextIndex = 0;  // 用于跟踪当前显示的是哪一句
+let textContent = textContents[currentTextIndex]; // 当前要显示的文本
+let index = 0;
+let isDeleting = false;
+let timer: number | null = null;
+
+onMounted(() => {
+  typeEffect();
+});
+
+onBeforeUnmount(() => {
+  if (timer !== null) {
+    clearTimeout(timer);
+  }
+});
+
+function typeEffect() {
+  if (dynamicText.value) {
+    if (!isDeleting && index < textContent.length) {
+      dynamicText.value.innerHTML += textContent.charAt(index);
+      index++;
+      changeColor(dynamicText.value);
+    } else if (isDeleting && index > 0) {
+      dynamicText.value.innerHTML = textContent.substring(0, index - 1);
+      index--;
+      changeColor(dynamicText.value);
+    }
+
+    if (index === textContent.length) {
+      // 如果当前是第二句话，延迟较长时间再开始删除
+      let delay = (currentTextIndex === 1) ? 2000 : 1000;
+      setTimeout(() => {
+        isDeleting = true;
+        typeEffect();  // 这里添加调用
+      }, delay);
+      return;
+    }
+
+    if (index === 0 && isDeleting) {
+      isDeleting = false;
+      // 切换到下一句
+      currentTextIndex = (currentTextIndex + 1) % textContents.length;
+      textContent = textContents[currentTextIndex];
+      timer = window.setTimeout(typeEffect, 1000); // 延迟1秒后再开始显示下一句
+      return;
+    }
+
+    timer = window.setTimeout(typeEffect, isDeleting ? 100 : 100);
+  }
+}
+
+function changeColor(element: HTMLElement) {
+  const colors = ['#f07c82', '#f1939c','#96c24e','#fba414','#541e24', '#e0c8d1', '#525288','#1661ab','#10aec2','#45b787','#41ae3c','#fed71a','#918072','#fa5d19',];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  element.style.color = randomColor;
+}
+
 /**
  * 提交创建登录
  */
@@ -94,7 +152,7 @@ const submitCreate = () => {
       if (res) {
         ElNotification({
           title: 'Success',
-          message: '欢迎 ' + nickname.value + ' 回家~',
+          message: '开启 ' + nickname.value + ' AI新生',
           type: 'success',
         })
         await router.push({
@@ -295,5 +353,14 @@ const submitCreate = () => {
   justify-content: center;
   // background: #ecefff;
   background: #ECEFFF;
+}
+
+.dynamic-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: "Alimama ShuHeiTi Bold", serif;
+  font-size: 50px;
+  letter-spacing: 2px;
 }
 </style>

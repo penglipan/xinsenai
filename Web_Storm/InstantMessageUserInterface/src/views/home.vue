@@ -208,7 +208,15 @@ const loadInfiniteScroll = () => {
 const sendMessages = async () => {
   if (message.value) {
     if (await userStore.sendMessages(message.value)) {
-      message.value = ''
+      // 模拟AI分身回复
+      setTimeout(() => {
+        const aiReply = `Hi ${nickname.value}, I'm your AI avatar. You said: "${message.value}"`;
+        userStore.receiveChatroomMessage({
+          sendNickname: `${nickname.value}1`,
+          messages: aiReply
+        });
+      }, 1000); // 延迟1秒回复
+      message.value = '';
     }
   }
 }
